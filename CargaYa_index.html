@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Carga Ya — Conectamos tu carga con tu camión</title>
+</head>
+<body>
+  <div id="app"></div>
+  <style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#101827;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}.top{height:72px;background:#0b1220;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 5%;gap:20px}.brand{font-size:25px;font-weight:900;letter-spacing:-1px}.brand span{color:#35d07f}.tag{opacity:.7}nav{display:flex;gap:7px;flex-wrap:wrap}nav button{background:transparent;color:white;border:0;padding:10px 12px;border-radius:9px;cursor:pointer}nav button:hover{background:#182338}.ghost{border:1px solid #33415b!important}.landing,.shell{max-width:1180px;margin:auto;padding:55px 22px}.hero{display:grid;grid-template-columns:1.5fr .8fr;gap:50px;align-items:center;min-height:470px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.7px;color:#26895b;margin-bottom:12px}h1{font-size:clamp(42px,6vw,76px);line-height:.98;letter-spacing:-3px;margin:0 0 22px}h1 span{color:#168457}h2{font-size:34px;margin:5px 0 8px}p{color:#657086;line-height:1.6}.primary{background:#16a765;color:white;border:0;border-radius:10px;padding:13px 18px;font-weight:800;cursor:pointer}.primary:hover{background:#118b54}.hero-card{background:white;border:1px solid #e2e7ef;border-radius:20px;padding:28px;box-shadow:0 18px 50px #0b122015}.hero-card h3{font-size:23px}.hero-card strong{display:block;font-size:30px;margin-top:25px}.hero-card small{display:block;color:#6c7688;margin-top:6px}.mini-label{font-size:11px;font-weight:800;color:#8390a5}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.features article,.load-card,.form-card{background:white;border:1px solid #e0e6ef;border-radius:16px;padding:23px}.features b{color:#16a765}.welcome{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}.profile-badge{background:#e7f8ef;color:#127347;font-size:11px;font-weight:900;padding:9px 12px;border-radius:99px}.section-head{display:flex;justify-content:space-between;margin-bottom:18px}.filters{display:grid;grid-template-columns:1.2fr 1.2fr 170px 170px 110px;gap:10px;margin-bottom:25px}.filters input,.filters select,.form-card input,.form-card select,.form-card textarea{width:100%;padding:12px;border:1px solid #d5dce7;border-radius:9px;background:#fff;font:inherit}.load-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.load-card{display:flex;flex-direction:column;gap:12px}.route{font-weight:900;font-size:17px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}.route i{font-style:normal;color:#16a765}.chips{display:flex;gap:6px;flex-wrap:wrap}.chips span{background:#f0f3f7;border-radius:99px;padding:5px 9px;font-size:12px}.date,.pay{font-size:13px;color:#69758a}.price{font-size:25px;font-weight:900}.load-card .primary{margin-top:auto}.form-card{max-width:850px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-card label{display:block;font-weight:700;font-size:13px;margin-bottom:14px}.form-card label input,.form-card label select,.form-card label textarea{margin-top:6px;font-weight:400}.form-card textarea{min-height:100px;resize:vertical}.commission-box,.notice{padding:13px;background:#f2faf6;border:1px solid #d4eee0;border-radius:10px;color:#3f5c4e;margin:6px 0 15px}.link{background:none;border:0;color:#168457;margin-top:12px;cursor:pointer}.auth-wrap{max-width:650px;margin:40px auto;padding:0 20px}.empty{background:white;border:1px dashed #cbd3df;padding:35px;border-radius:14px;text-align:center;color:#718096}@media(max-width:900px){.hero{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.load-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.top{height:auto;padding:16px 18px;align-items:flex-start}.top nav{width:100%}.landing,.shell{padding:30px 16px}.features,.load-grid,.two{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.welcome{align-items:flex-start;gap:15px}.tag{display:none}h1{letter-spacing:-2px}}
+</style>
+<script>
+
+
+const state = {
+  user: JSON.parse(localStorage.getItem("cargaya_user") || "null"),
+  loads: JSON.parse(localStorage.getItem("cargaya_loads") || "null") || [
+    {id:1, origin:"Posadas, Misiones", destination:"Buenos Aires, Buenos Aires", date:"2026-10-10", type:"General", truck:"Semi", weight:"28.000 kg", value:850000, payment:"Transferencia", phone:"Contacto del dador", status:"Disponible"},
+    {id:2, origin:"Oberá, Misiones", destination:"Rosario, Santa Fe", date:"2026-10-12", type:"Yerba mate", truck:"Chasis", weight:"12.000 kg", value:520000, payment:"Cheque 15 días", phone:"Contacto del dador", status:"Disponible"},
+    {id:3, origin:"Córdoba, Córdoba", destination:"Paraná, Entre Ríos", date:"2026-10-14", type:"General", truck:"Semi", weight:"30.000 kg", value:690000, payment:"Transferencia", phone:"Contacto del dador", status:"Disponible"}
+  ],
+  filterOrigin:"",
+  filterDestination:"",
+  filterDate:"",
+  filterType:""
+};
+
+function save() {
+  localStorage.setItem("cargaya_user", JSON.stringify(state.user));
+  localStorage.setItem("cargaya_loads", JSON.stringify(state.loads));
+}
+
+function money(n) {
+  return new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits:0}).format(n);
+}
+
+function commission(value) {
+  return value * 0.03;
+}
+
+function render() {
+  const app = document.querySelector("#app");
+  if (!state.user) {
+    app.innerHTML = `
+      <header class="top"><div class="brand">Carga <span>Ya</span></div><div class="tag">Cargas y camiones, directo.</div></header>
+      <main class="landing">
+        <section class="hero">
+          <div>
+            <div class="eyebrow">ARGENTINA · TRANSPORTE DE CARGAS</div>
+            <h1>Encontrá una carga.<br><span>Conseguí un camión.</span></h1>
+            <p>Carga Ya conecta dadores de carga con transportistas de todo el país, sin depender de grupos ni intermediarios.</p>
+            <button class="primary" id="start">Crear cuenta gratis</button>
+          </div>
+          <div class="hero-card">
+            <div class="mini-label">EJEMPLO DE CARGA</div>
+            <h3>Posadas → Buenos Aires</h3>
+            <p>General · Semi · 28.000 kg</p>
+            <strong>${money(850000)}</strong>
+            <small>Comisión Carga Ya (3%): ${money(commission(850000))}</small>
+          </div>
+        </section>
+        <section class="features">
+          <article><b>01</b><h3>Buscá</h3><p>Origen, destino, fecha, tipo de carga y camión.</p></article>
+          <article><b>02</b><h3>Publicá</h3><p>El dador carga todos los datos del viaje.</p></article>
+          <article><b>03</b><h3>Contactá</h3><p>Las partes hablan directamente y acuerdan el viaje.</p></article>
+        </section>
+      </main>`;
+    document.querySelector("#start").onclick = showRegister;
+    return;
+  }
+
+  app.innerHTML = `
+    <header class="top">
+      <div class="brand">Carga <span>Ya</span></div>
+      <nav>
+        <button data-page="buscar">Buscar cargas</button>
+        <button data-page="publicar">Publicar carga</button>
+        <button data-page="mis-cargas">Mis cargas</button>
+        <button id="logout" class="ghost">Salir</button>
+      </nav>
+    </header>
+    <main class="shell">
+      <section class="welcome">
+        <div><div class="eyebrow">BIENVENIDO/A</div><h2>${escapeHtml(state.user.first)} ${escapeHtml(state.user.last)}</h2>
+        <p>${state.user.role === "transportista" ? "Transportista / camionero" : "Dador de carga / empresa"}</p></div>
+        <div class="profile-badge">${state.user.role === "transportista" ? "TRANSPORTISTA" : "DADOR DE CARGA"}</div>
+      </section>
+      <div id="page"></div>
+    </main>`;
+
+  document.querySelectorAll("[data-page]").forEach(b => b.onclick = () => renderPage(b.dataset.page));
+  document.querySelector("#logout").onclick = () => { state.user = null; save(); render(); };
+  renderPage("buscar");
+}
+
+function escapeHtml(s="") {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
+function renderPage(page) {
+  const el = document.querySelector("#page");
+  if (!el) return;
+
+  if (page === "buscar") {
+    el.innerHTML = `
+      <div class="section-head"><div><h2>Buscar cargas</h2><p>Encontrá viajes disponibles en cualquier provincia o localidad.</p></div></div>
+      <form id="filters" class="filters">
+        <input id="fo" placeholder="Origen (ej. Posadas)" value="${escapeHtml(state.filterOrigin)}">
+        <input id="fd" placeholder="Destino (ej. Rosario)" value="${escapeHtml(state.filterDestination)}">
+        <input id="fdate" type="date" value="${state.filterDate}">
+        <select id="ftype"><option value="">Todos los tipos</option><option>General</option><option>Yerba mate</option><option>Refrigerada</option><option>Frágil</option><option>Otro</option></select>
+        <button class="primary">Buscar</button>
+      </form>
+      <div class="load-grid">${filteredLoads().map(loadCard).join("") || `<div class="empty">No encontramos cargas con esos filtros.</div>`}</div>`;
+    document.querySelector("#filters").onsubmit = e => {
+      e.preventDefault();
+      state.filterOrigin = document.querySelector("#fo").value;
+      state.filterDestination = document.querySelector("#fd").value;
+      state.filterDate = document.querySelector("#fdate").value;
+      state.filterType = document.querySelector("#ftype").value;
+      renderPage("buscar");
+    };
+    document.querySelectorAll(".contact").forEach(b => b.onclick = () => {
+      alert("En la versión real, este botón abrirá el contacto verificado del dador y registrará la operación para calcular la comisión del 3%.");
+    });
+  }
+
+  if (page === "publicar") {
+    el.innerHTML = `
+      <div class="section-head"><div><h2>Publicar una carga</h2><p>Completá los datos para que los transportistas puedan encontrarla.</p></div></div>
+      <form id="publish" class="form-card">
+        <div class="two"><label>Origen<input required name="origin" placeholder="Localidad, provincia"></label><label>Destino<input required name="destination" placeholder="Localidad, provincia"></label></div>
+        <div class="two"><label>Fecha de carga<input required name="date" type="date"></label><label>Tipo de carga<select name="type"><option>General</option><option>Yerba mate</option><option>Refrigerada</option><option>Frágil</option><option>Otro</option></select></label></div>
+        <div class="two"><label>Tipo de camión<input required name="truck" placeholder="Semi, chasis, balancín..."></label><label>Peso aproximado<input required name="weight" placeholder="Ej. 28.000 kg"></label></div>
+        <div class="two"><label>Valor total del flete (ARS)<input required name="value" type="number" min="1" step="1" placeholder="500000"></label>
+        <label>Medio de pago<select name="payment"><option>Transferencia</option><option>Contado</option><option>Cheque 7 días</option><option>Cheque 15 días</option><option>Cheque 30 días</option><option>Otro</option></select></label></div>
+        <label>Observaciones<textarea name="notes" placeholder="Detalles de la carga, horarios, requisitos, etc."></textarea></label>
+        <div class="commission-box">Comisión Carga Ya: <b>3% del valor del flete</b>. En este ejemplo se calcula al publicar: <span id="calc">$0</span>.</div>
+        <button class="primary">Publicar carga</button>
+      </form>`;
+    const value = document.querySelector('[name="value"]');
+    const calc = document.querySelector("#calc");
+    value.oninput = () => calc.textContent = money(Number(value.value || 0) * 0.03);
+    document.querySelector("#publish").onsubmit = e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const load = {id:Date.now(), origin:f.get("origin"), destination:f.get("destination"), date:f.get("date"), type:f.get("type"), truck:f.get("truck"), weight:f.get("weight"), value:Number(f.get("value")), payment:f.get("payment"), notes:f.get("notes"), status:"Disponible"};
+      state.loads.unshift(load); save();
+      alert("¡Carga publicada! Ahora aparece en el buscador.");
+      renderPage("buscar");
+    };
+  }
+
+  if (page === "mis-cargas") {
+    const mine = state.loads.filter(x => x.createdBy === state.user.email);
+    el.innerHTML = `<div class="section-head"><div><h2>Mis cargas</h2><p>Acá aparecerán las cargas publicadas desde tu cuenta.</p></div></div>
+      ${mine.length ? `<div class="load-grid">${mine.map(loadCard).join("")}</div>` : `<div class="empty">Todavía no publicaste cargas desde esta cuenta.</div>`}`;
+  }
+}
+
+function filteredLoads() {
+  return state.loads.filter(l => {
+    const a = state.filterOrigin.toLowerCase(), b = state.filterDestination.toLowerCase();
+    return (!a || l.origin.toLowerCase().includes(a)) &&
+      (!b || l.destination.toLowerCase().includes(b)) &&
+      (!state.filterDate || l.date === state.filterDate) &&
+      (!state.filterType || l.type === state.filterType);
+  });
+}
+
+function loadCard(l) {
+  return `<article class="load-card">
+    <div class="route"><span>${escapeHtml(l.origin)}</span><i>→</i><span>${escapeHtml(l.destination)}</span></div>
+    <div class="chips"><span>${escapeHtml(l.type)}</span><span>${escapeHtml(l.truck)}</span><span>${escapeHtml(l.weight)}</span></div>
+    <div class="date">Carga: ${escapeHtml(l.date)}</div>
+    <div class="price">${money(l.value)}</div>
+    <div class="pay">Pago: ${escapeHtml(l.payment)} · Comisión 3%: ${money(commission(l.value))}</div>
+    <button class="primary contact">Ver contacto</button>
+  </article>`;
+}
+
+function showRegister() {
+  document.querySelector("#app").innerHTML = `
+    <header class="top"><div class="brand">Carga <span>Ya</span></div></header>
+    <main class="auth-wrap"><form id="register" class="form-card auth">
+      <div class="eyebrow">CREAR CUENTA</div><h2>Empezá a usar Carga Ya</h2>
+      <div class="two"><label>Nombre<input required name="first"></label><label>Apellido<input required name="last"></label></div>
+      <label>Fecha de nacimiento<input required type="date" name="birth"></label>
+      <label>Gmail o teléfono<input required name="contact" placeholder="tu@gmail.com o +54..."></label>
+      <label>¿Qué sos?<select name="role"><option value="transportista">Transportista / camionero</option><option value="dador">Dador de carga / empresa</option></select></label>
+      <div class="notice">La versión de producción conectará esta cuenta a verificación real por correo/teléfono y validará que el usuario sea mayor de 18 años.</div>
+      <button class="primary">Crear cuenta</button>
+      <button type="button" class="link" id="back">Volver</button>
+    </form></main>`;
+  document.querySelector("#back").onclick = render;
+  document.querySelector("#register").onsubmit = e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const birth = new Date(f.get("birth"));
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+    if (age < 18) return alert("Carga Ya será para usuarios mayores de 18 años.");
+    state.user = {first:f.get("first"), last:f.get("last"), birth:f.get("birth"), email:f.get("contact"), role:f.get("role")};
+    save(); render();
+  };
+}
+
+render();
+
+</script>
+</body>
+</html>
