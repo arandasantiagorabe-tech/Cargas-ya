@@ -195,19 +195,40 @@ function showRegister() {
       <button type="button" class="link" id="back">Volver</button>
     </form></main>`;
   document.querySelector("#back").onclick = render;
-  document.querySelector("#register").onsubmit = e => {
-    e.preventDefault();
-    const f = new FormData(e.target);
-    const birth = new Date(f.get("birth"));
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
-    if (age < 18) return alert("Carga Ya será para usuarios mayores de 18 años.");
-    state.user = {first:f.get("first"), last:f.get("last"), birth:f.get("birth"), email:f.get("contact"), role:f.get("role")};
-    save(); render();
+ document.querySelector("#register").onsubmit = e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const birth = new Date(f.get("birth"));
+  const today = new Date();
+
+  let age = today.getFullYear() - birth.getFullYear();
+
+  if (
+    today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() &&
+     today.getDate() < birth.getDate())
+  ) {
+    age--;
+  }
+
+  if (age < 18) {
+    return alert("Carga Ya será para usuarios mayores de 18 años.");
+  }
+
+  state.user = {
+    first: f.get("first"),
+    last: f.get("last"),
+    birth: f.get("birth"),
+    email: f.get("contact"),
+    role: f.get("role")
   };
 
+  save();
+  render();
+};
+
 render();
+
 
 </script>
 </body>
